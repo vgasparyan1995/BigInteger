@@ -113,39 +113,41 @@ BigInteger BigInteger::operator* (const BigInteger& rhs) const
         return 0;
     }
 
-    unsigned long long lhs_right = 0;
-    unsigned long long rhs_right = 0;
-    const auto ulong_size = sizeof(unsigned long) / sizeof(unit_t);
-    for (int i = 0; i < ulong_size; ++i) {
-        lhs_right += lhs.get_unit(i) * std::pow((int)max_unit_value + 1, i);
-        rhs_right += rhs.get_unit(i) * std::pow((int)max_unit_value + 1, i);
+    unsigned long lhs_right = 0;
+    unsigned long rhs_right = 0;
+    const auto uint_size = sizeof(unsigned int) / sizeof(unit_t);
+    for (int i = 0; i < uint_size; ++i) {
+        lhs_right += (unsigned long)lhs.get_unit(i) * (unsigned long)std::pow((int)max_unit_value + 1, i);
+        rhs_right += (unsigned long)rhs.get_unit(i) * (unsigned long)std::pow((int)max_unit_value + 1, i);
     }
     BigInteger lhs_left;
     BigInteger rhs_left;
-    if (lhs.m_value.size() > ulong_size) {
-        lhs_left.m_value.assign(lhs.m_value.begin() + ulong_size, lhs.m_value.end());
+    if (lhs.m_value.size() > uint_size) {
+        lhs_left.m_value.assign(lhs.m_value.begin() + uint_size, lhs.m_value.end());
     }
-    if (rhs.m_value.size() > ulong_size) {
-        rhs_left.m_value.assign(rhs.m_value.begin() + ulong_size, rhs.m_value.end());
+    if (rhs.m_value.size() > uint_size) {
+        rhs_left.m_value.assign(rhs.m_value.begin() + uint_size, rhs.m_value.end());
     }
     
     BigInteger tmp_third_part = lhs_left * rhs_left;
     BigInteger third_part;
-    third_part.m_value.reserve(2 * ulong_size + tmp_third_part.m_value.size());
-    for (int i = 0; i < 2 * ulong_size; ++i) {
+    third_part.m_value.reserve(2 * uint_size + tmp_third_part.m_value.size());
+    for (int i = 0; i < 2 * uint_size; ++i) {
         third_part.m_value.push_back(0);
     }
     std::copy(tmp_third_part.m_value.begin(), tmp_third_part.m_value.end(), std::back_inserter(third_part.m_value));
+    third_part.refresh();
 
     lhs_left.multiply_by(rhs_right);
     rhs_left.multiply_by(lhs_right);
     BigInteger tmp_second_part = lhs_left + rhs_left;
     BigInteger second_part;
-    second_part.m_value.reserve(ulong_size + tmp_second_part.m_value.size());
-    for (int i = 0; i < 2 * ulong_size; ++i) {
+    second_part.m_value.reserve(uint_size + tmp_second_part.m_value.size());
+    for (int i = 0; i < uint_size; ++i) {
         second_part.m_value.push_back(0);
     }
     std::copy(tmp_second_part.m_value.begin(), tmp_second_part.m_value.end(), std::back_inserter(second_part.m_value));
+    second_part.refresh();
 
     BigInteger first_part(lhs_right * rhs_right);
     

@@ -78,8 +78,8 @@ BigInteger::BigInteger(T value, typename std::enable_if<std::is_integral<T>::val
     : m_sign(value >= 0)
 {
     for (int i = 0; i < sizeof(T) / sizeof(unit_t); ++i) {
-        set_unit(i, value % max_unit_value);
-        value /= max_unit_value;
+        set_unit(i, value % ((int)max_unit_value + 1));
+        value /= ((int)max_unit_value + 1);
     }
 }
 
@@ -91,7 +91,7 @@ T BigInteger::to_integral(typename std::enable_if<std::is_integral<T>::value>::t
 {
     T result = 0;
     for (int i = 0; i < min(sizeof(T) / sizeof(unit_t), m_value.size()); ++i) {
-        result += std::pow(max_unit_value, i) * get_unit(i);
+        result += std::pow(((int)max_unit_value + 1), i) * get_unit(i);
     }
     return m_sign ? result : -result;
 }

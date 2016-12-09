@@ -2,14 +2,17 @@
 
 #include "BigInteger.h"
 
+BigInteger factorial(const BigInteger& n)
+{
+    if (n == 0) {
+        return 1;
+    } else {
+        return factorial(n - 1) * n;
+    }
+}
+
 int main()
 {
-    BigInteger a = 10;
-    BigInteger b = 12;
-    BigInteger c = a * b;
-    std::cout << c.to_integral<long>() << std::endl;
-    BigInteger d = c / 4;
-    std::cout << d.to_integral<long>() << std::endl;
-    BigInteger e = d - 13;
-    std::cout << e.to_integral<long>() << std::endl;
+    const auto value = factorial(150);
+    std::cout << value.to_string() << std::endl;
 }
