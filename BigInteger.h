@@ -16,6 +16,7 @@ public:
     typedef unsigned short big_unit_t;
 
     BigInteger();
+    explicit BigInteger(const std::string& value);
 
     template <typename T>
     BigInteger(T value, typename std::enable_if<std::is_integral<T>::value>::type* = 0);

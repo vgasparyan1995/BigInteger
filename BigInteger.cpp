@@ -7,6 +7,29 @@ BigInteger::BigInteger()
     : m_sign(true)
 {}
 
+BigInteger::BigInteger(const std::string& value)
+    : m_sign(true)
+{
+    BigInteger tmp;
+    bool apply = true;
+    BigInteger degree_multiplier(1);
+    for (auto iter = value.crbegin(); iter != value.crend(); ++iter) {
+        if (*iter <= '9' && *iter >= '0') {
+            tmp += (degree_multiplier * BigInteger(*iter - 48));
+            degree_multiplier *= 10;
+        } else if (*iter == '-' && ++iter == value.crend()) {
+            m_sign = false;
+            break;
+        } else {
+            apply = false;
+            break;
+        }
+    }
+    if (apply) {
+        *this = std::move(tmp);
+    }
+}
+
 bool BigInteger::operator== (const BigInteger& rhs) const
 {
     return m_sign == rhs.m_sign
