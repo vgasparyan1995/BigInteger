@@ -1,6 +1,7 @@
 #include "BigInteger.h"
 
 #include <stdexcept>
+#include <iterator>
 #include <algorithm>
 
 BigInteger::BigInteger()
