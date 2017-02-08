@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cmath>
+#include <cstdint>
 #include <functional>
 #include <iostream>
 #include <limits>
@@ -12,8 +13,8 @@
 class BigInteger
 {
 public:
-    typedef unsigned char unit_t;
-    typedef unsigned short big_unit_t;
+    typedef uint8_t unit_t;
+    typedef uint16_t big_unit_t;
 
     BigInteger();
     explicit BigInteger(const std::string& value);
@@ -63,7 +64,7 @@ private:
     unit_t get_unit(const size_t index) const;
     void refresh();
     BigInteger complement(const size_t degree) const;
-    void multiply_by(const unsigned long long rhs);
+    void multiply_by(const uint64_t rhs);
 
     template <bool LESS, bool EQUAL>
     static bool compare(const BigInteger& lhs, const BigInteger& rhs);
@@ -79,8 +80,8 @@ BigInteger::BigInteger(T value, typename std::enable_if<std::is_integral<T>::val
     : m_sign(value >= 0)
 {
     for (int i = 0; i < sizeof(T) / sizeof(unit_t); ++i) {
-        set_unit(i, value % ((int)max_unit_value + 1));
-        value /= ((int)max_unit_value + 1);
+        set_unit(i, value % ((uint32_t)max_unit_value + 1));
+        value /= ((uint32_t)max_unit_value + 1);
     }
 }
 
@@ -92,7 +93,7 @@ T BigInteger::to_integral(typename std::enable_if<std::is_integral<T>::value>::t
 {
     T result = 0;
     for (int i = 0; i < min(sizeof(T) / sizeof(unit_t), m_value.size()); ++i) {
-        result += std::pow(((int)max_unit_value + 1), i) * get_unit(i);
+        result += std::pow(((uint32_t)max_unit_value + 1), i) * get_unit(i);
     }
     return m_sign ? result : -result;
 }
@@ -142,8 +143,8 @@ struct hash<BigInteger>
 {
     std::size_t operator() (const BigInteger& n) const
     {
-        std::hash<long long> hasher;
-        return hasher(n.to_integral<long long>());
+        std::hash<uint64_t> hasher;
+        return hasher(n.to_integral<uint64_t>());
     }
 };
 

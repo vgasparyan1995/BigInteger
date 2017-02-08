@@ -1,8 +1,8 @@
-#include "BigInteger.h"
-
 #include <stdexcept>
 #include <iterator>
 #include <algorithm>
+
+#include "BigInteger.h"
 
 BigInteger::BigInteger()
     : m_sign(true)
@@ -75,11 +75,11 @@ BigInteger BigInteger::operator+ (const BigInteger& rhs) const
             big_unit_t tmp = big_unit_t(lhs.get_unit(i)) +
                 big_unit_t(rhs.get_unit(i)) +
                 remainder;
-            result.set_unit(i, tmp % ((int)max_unit_value + 1));
-            remainder = tmp / ((int)max_unit_value + 1);
+            result.set_unit(i, tmp % ((uint32_t)max_unit_value + 1));
+            remainder = tmp / ((uint32_t)max_unit_value + 1);
         }
         if (remainder != 0) {
-            result.set_unit(max_degree, remainder % ((int)max_unit_value + 1));
+            result.set_unit(max_degree, remainder % ((uint32_t)max_unit_value + 1));
         }
         result.m_sign = lhs.m_sign;
     } else if (lhs.m_sign && !rhs.m_sign) {
@@ -137,12 +137,12 @@ BigInteger BigInteger::operator* (const BigInteger& rhs) const
         return 0;
     }
 
-    unsigned long lhs_right = 0;
-    unsigned long rhs_right = 0;
-    const auto uint_size = sizeof(unsigned int) / sizeof(unit_t);
+    uint64_t lhs_right = 0;
+    uint64_t rhs_right = 0;
+    const auto uint_size = sizeof(uint32_t) / sizeof(unit_t);
     for (int i = 0; i < uint_size; ++i) {
-        lhs_right += (unsigned long)lhs.get_unit(i) * (unsigned long)std::pow((int)max_unit_value + 1, i);
-        rhs_right += (unsigned long)rhs.get_unit(i) * (unsigned long)std::pow((int)max_unit_value + 1, i);
+        lhs_right += (uint64_t)lhs.get_unit(i) * (uint64_t)std::pow((uint32_t)max_unit_value + 1, i);
+        rhs_right += (uint64_t)rhs.get_unit(i) * (uint64_t)std::pow((uint32_t)max_unit_value + 1, i);
     }
     BigInteger lhs_left;
     BigInteger rhs_left;
@@ -308,7 +308,7 @@ std::string BigInteger::to_string() const
         result.push_back('0');
     } else {
         while (tmp != 0) {
-            result.push_back(char((tmp % 10).to_integral<char>() + 48));
+            result.push_back(int8_t((tmp % 10).to_integral<int8_t>() + 48));
             tmp /= 10;
         }
         if (!m_sign) {
@@ -365,13 +365,13 @@ BigInteger BigInteger::complement(const size_t degree) const
     return std::move(result);
 }
 
-void BigInteger::multiply_by(const unsigned long long rhs)
+void BigInteger::multiply_by(const uint64_t rhs)
 {
     BigInteger result;
     for (int i = 0; i < m_value.size(); ++i) {
-        unsigned long long sub_result = rhs * get_unit(i);
+        uint64_t sub_result = rhs * get_unit(i);
         BigInteger tmp;
-        for (int j = i; j < i + sizeof(unsigned long long) / sizeof(unit_t); ++j) {
+        for (int j = i; j < i + sizeof(uint64_t) / sizeof(unit_t); ++j) {
             tmp.set_unit(j, sub_result % ((int)max_unit_value + 1));
             sub_result /= ((int)max_unit_value + 1);
         }
