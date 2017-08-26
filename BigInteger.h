@@ -70,6 +70,15 @@ private:
     static bool compare(const BigInteger& lhs, const BigInteger& rhs);
 
 private:
+    using BaseDecoderResult = std::tuple<bool, int, std::string_view, std::function<int (char)> >;
+
+    static BaseDecoderResult decodeBase(const std::string& value, bool& ok);
+    static int charToInt2(char, bool& ok);
+    static int charToInt8(char, bool& ok);
+    static int charToInt10(char, bool& ok);
+    static int charToInt16(char, bool& ok);
+
+private:
     std::vector<unit_t> m_value;
     bool m_sign;
     static const unit_t max_unit_value = std::numeric_limits<unit_t>::max();

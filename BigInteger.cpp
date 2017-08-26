@@ -13,11 +13,17 @@ BigInteger::BigInteger(const std::string& value)
 {
     BigInteger tmp;
     bool apply = true;
+    auto [ sign, base, digits, converter ] = decodeBase(value, apply);
+    if (!apply) {
+        return;
+    }
+
     BigInteger degree_multiplier(1);
-    for (auto iter = value.crbegin(); iter != value.crend(); ++iter) {
+    for (auto iter = value.cbegin(); iter != value.cend(); ++iter) {
         if (*iter <= '9' && *iter >= '0') {
             tmp += (degree_multiplier * BigInteger(*iter - 48));
-            degree_multiplier *= 10;
+            tmp *= 10;
+            //degree_multiplier *= 10;
         } else if (*iter == '-' && ++iter == value.crend()) {
             m_sign = false;
             break;
