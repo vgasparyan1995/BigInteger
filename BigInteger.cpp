@@ -18,6 +18,18 @@ BigInteger::BigInteger(const std::string& value)
         return;
     }
 
+    for (const auto d : digits) {
+		tmp *= base;
+		tmp += converter(d, apply);
+		if (!apply) {
+		    return;
+		}
+    }
+	m_sign = sign;
+    if (apply) {
+        *this = std::move(tmp);
+    }
+/*
     BigInteger degree_multiplier(1);
     for (auto iter = value.cbegin(); iter != value.cend(); ++iter) {
         if (*iter <= '9' && *iter >= '0') {
@@ -35,6 +47,7 @@ BigInteger::BigInteger(const std::string& value)
     if (apply) {
         *this = std::move(tmp);
     }
+	*/
 }
 
 bool BigInteger::operator== (const BigInteger& rhs) const
@@ -387,3 +400,91 @@ void BigInteger::multiply_by(const uint64_t rhs)
     *this = result;
 }
 
+BigInteger::BaseDecoderResult BigInteger::decodeBase(const std::string& value, bool& ok)
+{
+    auto result = std::make_tuple(true, 0, std::string_view(value.c_str()), std::function<int (char)>() );
+    auto valueView = std::string_view(value.c_str());
+    if (valueView.empty()) {
+        ok = false;
+        return result;
+    }
+    if (valueView[0] == '-') {
+        std::get<0>(result) = false;
+        valueView.removePrefix(1);
+        if (valueView.empty()) {
+            ok = false;
+            return result;
+        }
+    }
+    if (valueView[0] == '0') {
+        valueView.removePrefix(1);
+        if (valueView.empty()) {
+            return result;
+        }
+
+        if (valueView[0] == 'b') {
+            valueView.removePrefix(1):
+            std::get<1>(result) = 2;
+            std::get<3>(result) = &BigInteger::charToInt2;
+        } else if (valueView[0] == 'x') {
+            valueView.removePrefix(1):
+            std::get<1>(result) = 16;
+            std::get<3>(result) = &BigInteger::charToInt16;
+        } else {
+            std::get<1>(result) = 8;
+            std::get<3>(result) = &BigInteger::charToInt8;
+        }
+    } else {
+        std::get<3>(result) = &BigInteger::charToInt10;
+    }
+    if (valueView.empty()) {
+        ok = false;
+        return result;
+    }
+    std::get<2>(result) = valueView;
+    return result;
+}
+
+int BigInteger::charToInt2(char digit, bool& ok)
+{
+    switch (digit) {
+    case '0':
+        return 0;
+    case '1':
+        return 1;
+    default:
+        ok = false;
+    }
+    return 0;
+}
+
+int BigInteger::charToInt8(char digit, bool& ok)
+{
+    if (digit >= '0' && digit <= '7') {
+        return static_cast<int>(digit - '0');
+    }
+    ok = false;
+    return 0;
+}
+
+int BigInteger::charToInt10(char digit, bool& ok)
+{
+    if (digit >= '0' && digit <= '9') {
+        return static_cast<int>(digit - '0');
+    }
+    ok = false;
+    return 0;
+}
+
+int BigInteger::charToInt16(char digit, bool& ok)
+{
+    if (digit >= '0' && digit <= '9') {
+        return static_cast<int>(digit - '0');
+    } else if (digit >= 'a' && digit <= 'f') {
+        return static_cast<int>(10 + digit - 'a');
+    } else if (digit >= 'A' && digit <= 'F') {
+        return static_cast<int>(10 + digit - 'A');
+    }
+    ok = false;
+    return 0;
+}
