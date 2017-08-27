@@ -72,7 +72,7 @@ private:
     static bool compare(const BigInteger& lhs, const BigInteger& rhs);
 
 private:
-    using BaseDecoderResult = std::tuple<bool, int, std::string_view, std::function<int (char)> >;
+    using BaseDecoderResult = std::tuple<bool, int, std::string_view, std::function<int (char, bool&)> >;
 
     static BaseDecoderResult decodeBase(const std::string& value, bool& ok);
     static int charToInt2(char, bool& ok);

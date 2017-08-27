@@ -29,25 +29,6 @@ BigInteger::BigInteger(const std::string& value)
     if (apply) {
         *this = std::move(tmp);
     }
-/*
-    BigInteger degree_multiplier(1);
-    for (auto iter = value.cbegin(); iter != value.cend(); ++iter) {
-        if (*iter <= '9' && *iter >= '0') {
-            tmp += (degree_multiplier * BigInteger(*iter - 48));
-            tmp *= 10;
-            //degree_multiplier *= 10;
-        } else if (*iter == '-' && ++iter == value.crend()) {
-            m_sign = false;
-            break;
-        } else {
-            apply = false;
-            break;
-        }
-    }
-    if (apply) {
-        *this = std::move(tmp);
-    }
-	*/
 }
 
 bool BigInteger::operator== (const BigInteger& rhs) const
@@ -402,7 +383,7 @@ void BigInteger::multiply_by(const uint64_t rhs)
 
 BigInteger::BaseDecoderResult BigInteger::decodeBase(const std::string& value, bool& ok)
 {
-    auto result = std::make_tuple(true, 0, std::string_view(value.c_str()), std::function<int (char)>() );
+    auto result = std::make_tuple(true, 0, std::string_view(value.c_str()), std::function<int (char, bool&)>() );
     auto valueView = std::string_view(value.c_str());
     if (valueView.empty()) {
         ok = false;
@@ -410,24 +391,24 @@ BigInteger::BaseDecoderResult BigInteger::decodeBase(const std::string& value, b
     }
     if (valueView[0] == '-') {
         std::get<0>(result) = false;
-        valueView.removePrefix(1);
+        valueView.remove_prefix(1);
         if (valueView.empty()) {
             ok = false;
             return result;
         }
     }
     if (valueView[0] == '0') {
-        valueView.removePrefix(1);
+        valueView.remove_prefix(1);
         if (valueView.empty()) {
             return result;
         }
 
         if (valueView[0] == 'b') {
-            valueView.removePrefix(1):
+            valueView.remove_prefix(1);
             std::get<1>(result) = 2;
             std::get<3>(result) = &BigInteger::charToInt2;
         } else if (valueView[0] == 'x') {
-            valueView.removePrefix(1):
+            valueView.remove_prefix(1);
             std::get<1>(result) = 16;
             std::get<3>(result) = &BigInteger::charToInt16;
         } else {
@@ -435,6 +416,7 @@ BigInteger::BaseDecoderResult BigInteger::decodeBase(const std::string& value, b
             std::get<3>(result) = &BigInteger::charToInt8;
         }
     } else {
+        std::get<1>(result) = 10;
         std::get<3>(result) = &BigInteger::charToInt10;
     }
     if (valueView.empty()) {
