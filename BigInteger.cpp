@@ -237,6 +237,19 @@ BigInteger BigInteger::operator% (const BigInteger& rhs) const
     return std::move(remainder);
 }
 
+BigInteger BigInteger::operator^ (const BigInteger& rhs) const
+{
+    BigInteger result(1);
+    for (BigInteger i = 0; i < rhs; ++i) {
+        if (rhs.m_sign) {
+            result *= *this;
+        } else {
+            result /= *this;
+        }
+    }
+    return result;
+}
+
 BigInteger& BigInteger::operator+= (const BigInteger& that)
 {
     *this = *this + that;

@@ -13,6 +13,7 @@ BigInteger factorial(const BigInteger& n)
 
 int main()
 {
-    const auto value = factorial(150);
-    std::cout << value.to_string() << std::endl;
+    //const auto value = factorial(150);
+    //std::cout << value.to_string() << std::endl;
+    std::cout << (BigInteger(2) ^ BigInteger(2048)).to_string() << std::endl;
 }

@@ -46,6 +46,7 @@ public:
     BigInteger operator* (const BigInteger& rhs) const;
     BigInteger operator/ (const BigInteger& rhs) const;
     BigInteger operator% (const BigInteger& rhs) const;
+    BigInteger operator^ (const BigInteger& rhs) const;
 
     BigInteger& operator+= (const BigInteger& that);
     BigInteger& operator-= (const BigInteger& that);
